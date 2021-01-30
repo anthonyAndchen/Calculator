@@ -26,6 +26,12 @@ int Calculator::getPrior(char c)
 	}
 }
 
+Calculator::Calculator()
+{
+	opera = "支持运算符：+, - , *, /, %（求余）, ^（幂次方）";
+	result = 0.0;
+}
+
 //表达式标准格式化
 void Calculator::getFormat()
 {
@@ -47,7 +53,7 @@ void Calculator::getPostfix()
 {
 	string tmp;
 	for (size_t i = 0; i < stdInfix.size(); i++) {
-		tmp == "";
+		tmp = "";
 		switch (stdInfix[i]) {
 		case '+':
 		case '-':
@@ -105,3 +111,104 @@ void Calculator::getPostfix()
 		opStack.pop();
 	}
 }
+
+//计算
+void Calculator::calResult()
+{
+	string tmp;
+	double number = 0;
+	double op1 = 0, op2 = 0;
+
+	for (int i = 0; i < postfix.size(); i++) {
+		tmp = postfix[i];
+		if (tmp[0] >= '0' && tmp[0] <= '9') {
+			number = atof(tmp.c_str());
+			figStack.push(number);
+		}
+		else if (postfix[i] == "+") {
+			if (!figStack.empty()) {
+				op2 = figStack.top();
+				figStack.pop();
+			}
+			if (!figStack.empty()) {
+				op1 = figStack.top();
+				figStack.pop();
+			}
+			figStack.push(op1 + op2);
+		}
+		else if (postfix[i] == "-") {
+			if (!figStack.empty()) {
+				op2 = figStack.top();
+				figStack.pop();
+			}
+			if (!figStack.empty()) {
+				op1 = figStack.top();
+				figStack.pop();
+			}
+			figStack.push(op1 - op2);
+		}
+		else if (postfix[i] == "*") {
+			if (!figStack.empty()) {
+				op2 = figStack.top();
+				figStack.pop();
+			}
+			if (!figStack.empty()) {
+				op1 = figStack.top();
+				figStack.pop();
+			}
+			figStack.push(op1 * op2);
+		}
+		else if (postfix[i] == "/") {
+			if (!figStack.empty()) {
+				op2 = figStack.top();
+				figStack.pop();
+			}
+			if (!figStack.empty()) {
+				op1 = figStack.top();
+				figStack.pop();
+			}
+			if (op2 == 0) {
+				//除数为0的情况下的处理
+			}
+			figStack.push(op1 / op2);
+		}
+		else if (postfix[i] == "%") {
+			if (!figStack.empty()) {
+				op2 = figStack.top();
+				figStack.pop();
+			}
+			if (!figStack.empty()) {
+				op1 = figStack.top();
+				figStack.pop();
+			}
+			figStack.push(fmod(op1, op2));
+		}
+		else if (postfix[i] == "^") {
+			if (!figStack.empty()) {
+				op2 = figStack.top();
+				figStack.pop();
+			}
+			if (!figStack.empty()) {
+				op1 = figStack.top();
+				figStack.pop();
+			}
+			figStack.push(pow(op1, op2));
+		}
+	}//end for
+	if (!figStack.empty()) {
+		result = figStack.top();
+	}
+}
+
+void Calculator::calculate()
+{
+	getFormat();       //表达式格式化
+	getPostfix();      //后缀表达式转换
+	calResult();       //获取算数结果
+}
+
+double Calculator::getResult()
+{
+	return result;
+}
+

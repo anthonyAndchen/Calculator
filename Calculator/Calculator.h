@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <stack>
+#include <cmath>
 
 using namespace std;
 //计算器类
@@ -13,7 +14,7 @@ public:
 	int getPrior(char c);       // 获取运算符优先级
 	void getPostfix();          // 后缀表达式转换
 	void calResult();           // 计算结果
-
+	void calculate();			// 计算方法
 	double getResult();         // 获取结果
 
 	string opera;               // 运算符号
