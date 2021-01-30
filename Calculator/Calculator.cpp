@@ -53,7 +53,55 @@ void Calculator::getPostfix()
 		case '-':
 		case '*':
 		case '/':
-
-		}
+		case '%':
+		case '^':
+			if (opStack.empty() || opStack.top() == '(') {
+				opStack.push(stdInfix[i]);
+			}
+			else {
+				while (!opStack.empty() && (getPrior(opStack.top()) >= getPrior(stdInfix[i]))) {
+					tmp += opStack.top();
+					postfix.push_back(tmp);
+					opStack.pop();
+					tmp = "";
+				}
+				opStack.push(stdInfix[i]);
+			}
+			break;
+		case '(':
+			opStack.push(stdInfix[i]);
+			break;
+		case ')':
+			while (!opStack.empty() && opStack.top() != '(') {
+				tmp += opStack.top();
+				postfix.push_back(tmp);
+				opStack.pop();
+				tmp = "";
+			}
+			if (!opStack.empty() && opStack.top() == '(') {
+				opStack.pop();    //左括号丢弃出栈
+			}
+			break;
+		default:
+			if ((stdInfix[i] >= '0') && (stdInfix[i] <= '9')) {
+				tmp += stdInfix[i];
+				//小数处理
+				while (i + 1 < stdInfix.length() && ((stdInfix[i + 1] >= '0' && stdInfix[i + 1] <= '9') || stdInfix[i + 1] == '.')) {
+					tmp += stdInfix[i + 1];   //是连续的数字，追加
+					i++;
+				}
+				if (tmp[tmp.length() - 1] == '.') {
+					tmp += '0';     //将 x. 作 x.0
+				}
+				postfix.push_back(tmp);
+			}
+			break;
+		}//end switch
+	}//end for
+	while (!opStack.empty()) {     //将栈中剩余符号加入后缀表达式
+		tmp = "";
+		tmp += opStack.top();
+		postfix.push_back(tmp);
+		opStack.pop();
 	}
 }
